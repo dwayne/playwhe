@@ -72,7 +72,7 @@ class Mark(object):
             raise ValueError("number is out of range")
         
         self.__number = number
-        self.__name = name_of_mark[number]
+        self.__name = Mark.name_of_number[number]
     
     number = property(lambda self: self.__number)
     name = property(lambda self: self.__name)
@@ -86,7 +86,7 @@ class Mark(object):
         return Mark.name_of_number[number]
     
     def __repr__(self):
-        return '%s(%d, "%s")' % (self.__class__, self.__mark, self.__name)
+        return '%s(%d, "%s")' % (self.__class__, self.__number, self.__name)
     
     def __str__(self):
         return "%d (%s)" % (self.__number, self.__name)

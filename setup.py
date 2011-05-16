@@ -5,7 +5,7 @@
 from distutils.core import setup
 
 setup(name="playwhe",
-      version="0.2a1",
+      version="0.2a2",
       description="A Python API for retrieving Play Whe results.",
       url="http://pypi.python.org/pypi/playwhe",
       license="License :: Public Domain",
