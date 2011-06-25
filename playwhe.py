@@ -1,7 +1,12 @@
-"""A Python API for retrieving Play Whe results.
+#! /usr/bin/env python
 
-This library provides a Python interface for retrieving Play Whe results from
+"""A Python API and script for retrieving Play Whe results.
+
+The library provides a Python interface for retrieving Play Whe results from
 the National Lotteries Control Board (NLCB) website at http://www.nlcb.co.tt/.
+
+The script uses the library to provide a tool for the retrieval of Play Whe
+results.
 
 """
 
@@ -12,6 +17,10 @@ import sys
 from operator import attrgetter
 from urllib import urlencode
 from urllib2 import urlopen, URLError
+
+__version__ = "0.2a3"
+__author__  = "Dwayne R. Crooks"
+__email__   = "me@dwaynecrooks.com"
 
 # Play Whe's birthday
 start_date = datetime.date(1994, 7, 4) # July 4th, 1994
@@ -250,16 +259,61 @@ class PlayWhe(object):
         return sorted(results, key=attrgetter("draw"))
 
 if __name__ == "__main__":
+    from optparse import OptionParser
     from sys import exit
-    
+
+    parser = OptionParser(usage="usage: %prog [options]",
+                          version="%prog " + __version__,
+                          description="A script for the retrieval and storage of Play Whe results.",
+                          epilog="For more help or to report bugs, please contact %s at %s." % (__author__, __email__))
+    parser.add_option("-d", "--date",
+                      help="display all the results for DATE. DATE must take "
+                           "one of the formats: yyyy-mm or yyyy-mm-dd. If DATE "
+                           "has the format yyyy-mm then all the results for "
+                           "the month in that year are displayed. Otherwise, "
+                           "DATE has the format yyyy-mm-dd, and all the "
+                           "results for that day are displayed")
+    parser.add_option("-p", "--prettyprint",
+                      action="store_true", default=False,
+                      help="display results in a nice human readable format")
+
+    (options, args) = parser.parse_args()
+
     try:
-        print "\n\n".join(map(lambda r: r.prettyprint(),
-                          reversed(PlayWhe().results())))
-    except PlayWheException:
-        print "Sorry, unable to retrieve results at this time. Try again later."
-        exit(1)
+        def display_results(results):
+            if results:
+                if options.prettyprint:
+                    print "\n\n".join(map(lambda r: r.prettyprint(), reversed(results)))
+                else:
+                    print "\n".join(map(str, reversed(results)))
+            else:
+                print "No results found."
+
+        network_connection_error = \
+            "Sorry, unable to retrieve the results at this time.\n" + \
+            "Please check your network connection and try again at a later time."
+
+        if options.date:
+            def results_for(year, month, day=None):
+                if day is not None:
+                    return PlayWhe().results_for_day(year, month, day)
+                return PlayWhe().results_for_month(year, month)
+
+            try:
+                display_results(results_for(*map(int, options.date.split("-"))))
+            except ValueError, TypeError:
+                parser.error('Must be a valid date in the format "yyyy-mm" or "yyyy-mm-dd"')
+            except PlayWheException:
+                print network_connection_error
+                exit(1)
+        else:
+            try:
+                display_results(PlayWhe().results())
+            except PlayWheException:
+                print network_connection_error
+                exit(1)
     except KeyboardInterrupt:
-        pass
-    except:
-        print "Sorry, an unknown error has occurred."
+        print
+    except Exception:
+        print "Sorry, an unknown error has occurred. Program terminated abnormally."
         exit(1)

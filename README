@@ -1,0 +1,27 @@
+A Python API and script for retrieving Play Whe results.
+
+The library provides a Python interface for retrieving Play Whe results from
+the `National Lotteries Control Board <http://www.nlcb.co.tt/>`_
+(NLCB) website.
+
+The script uses the library to provide a tool for the retrieval of Play Whe
+results.
+
+Example usage::
+
+    from playwhe import Mark, PlayWhe
+
+    # display the standard names associated with each number
+    for n in range(Mark.lowest, Mark.highest + 1):
+        print "%2d - %s" % (n, Mark.get_name_of_number(n))
+
+    p = PlayWhe()
+
+    # retrieve and display all the results for the month of April in the year 2011
+    print "\n\n".join(map(lambda r: r.prettyprint(), p.results_for_month(2011, 4)))
+
+    # retrieve and display the results for April 2nd, 2011
+    print "\n\n".join(map(lambda r: r.prettyprint(), p.results_for_day(2011, 4, 2)))
+
+    # retrieve and display the two most recent results
+    print "\n\n".join(map(lambda r: r.prettyprint(), p.results()))
