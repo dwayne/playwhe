@@ -1,12 +1,12 @@
 #! /usr/bin/env python
 
-"""A Python API and script for retrieving Play Whe results.
+"""A Python API and script for retrieving and storing Play Whe results.
 
 The library provides a Python interface for retrieving Play Whe results from
 the National Lotteries Control Board (NLCB) website at http://www.nlcb.co.tt/.
 
-The script uses the library to provide a tool for the retrieval of Play Whe
-results.
+The script uses the library to provide a tool for the retrieval and storage
+of Play Whe results.
 
 """
 
@@ -258,14 +258,116 @@ class PlayWhe(object):
 
         return sorted(results, key=attrgetter("draw"))
 
+import sqlite3
+
+def createdb(db_path):
+    """Create and initialize a Play Whe database.
+
+    db_path should be an absolute path to the database. For example,
+    /home/<username>/playwhe.db.
+    """
+    try:
+        conn = sqlite3.connect(db_path)
+    except sqlite3.Error:
+        raise PlayWheException("Sorry, unable to connect to the database at %s." % db_path)
+
+    c = conn.cursor()
+
+    # setup the initial tables and relationships
+    c.execute("""
+    CREATE TABLE IF NOT EXISTS marks(
+        number INTEGER PRIMARY KEY,
+        name TEXT
+    )""")
+
+    c.execute("""
+    CREATE TABLE IF NOT EXISTS results(
+        draw INTEGER PRIMARY KEY,
+        date TEXT,
+        time_of_day TEXT,
+        number INTEGER NOT NULL REFERENCES marks(number)
+    )""")
+
+    # populate the marks table
+    for number, name in Mark.name_of_number.iteritems():
+        c.execute("INSERT OR IGNORE INTO marks VALUES(?,?)", (number, name))
+
+    conn.commit()
+    conn.close()
+
+network_connection_error = \
+    "Sorry, unable to retrieve the results at this time.\n" + \
+    "Please check your network connection and try again at a later time."
+
+def updatedb(db_path):
+    """Update a Play Whe database with the latest results.
+
+    db_path should be an absolute path to the database. For example,
+    /home/<username>/playwhe.db.
+    """
+    try:
+        conn = sqlite3.connect(db_path)
+    except sqlite3.Error:
+        raise PlayWheException("Sorry, unable to connect to the database at %s." % db_path)
+
+    conn.row_factory = sqlite3.Row
+    c = conn.cursor()
+
+    try:
+        c.execute("SELECT * FROM RESULTS ORDER BY DRAW DESC LIMIT 1")
+    except sqlite3.Error:
+        raise PlayWheException("Sorry, problems encountered accessing the database at %s." % db_path)
+
+    last_result = c.fetchone()
+
+    last = (start_date, "AM")
+    if last_result:
+        date = datetime.date(*map(int, last_result["date"].split('-')))
+        if last_result["time_of_day"] == "AM":
+            last = (date, "PM")
+        else:
+            last = (date + datetime.timedelta(days=1), "AM")
+    last_date, last_time_of_day = last
+    current_date = datetime.date.today()
+
+    try:
+        p = PlayWhe()
+        for year in range(last_date.year, current_date.year + 1):
+
+            start_month = last_date.month if year == last_date.year else 1
+            end_month = current_date.month if year == current_date.year else 12
+
+            for month in range(start_month, end_month + 1):
+                print >> sys.stderr, "[%s] Fetching results for %s-%s..." % (datetime.datetime.now().strftime("%Y-%m-%d %I:%M%p"), year, str(month).zfill(2)),
+
+                try:
+                    results = p.results_for_month(year, month)
+                except PlayWheException:
+                    raise PlayWheException(network_connection_error)
+                for r in results:
+                    conn.execute("INSERT OR IGNORE INTO results (draw, date, time_of_day, number) VALUES(?,?,?,?)", (r.draw, r.date.isoformat(), r.time_of_day, r.number))
+                    conn.commit()
+
+                print >> sys.stderr, "DONE!"
+    finally:
+        conn.close()
+
 if __name__ == "__main__":
     from optparse import OptionParser
-    from sys import exit
+    import os.path
 
     parser = OptionParser(usage="usage: %prog [options]",
-                          version="%prog " + __version__,
+                          version=__version__,
                           description="A script for the retrieval and storage of Play Whe results.",
                           epilog="For more help or to report bugs, please contact %s at %s." % (__author__, __email__))
+    parser.add_option("-c", "--createdb", dest="createdb_path", metavar="PATH",
+                      help="create and initialize a Play Whe database. PATH must "
+                           "be a path to the database you want to setup. For "
+                           "example, /home/<username>/playwhe.db")
+    parser.add_option("-u", "--updatedb", dest="updatedb_path", metavar="PATH",
+                      help="update a Play Whe database with the latest results. "
+                           "PATH must be a path to the database you want to "
+                           "update. For example, /home/<username>/playwhe.db")
     parser.add_option("-d", "--date",
                       help="display all the results for DATE. DATE must take "
                            "one of the formats: yyyy-mm or yyyy-mm-dd. If DATE "
@@ -289,11 +391,14 @@ if __name__ == "__main__":
             else:
                 print "No results found."
 
-        network_connection_error = \
-            "Sorry, unable to retrieve the results at this time.\n" + \
-            "Please check your network connection and try again at a later time."
+        if options.createdb_path:
+            createdb(os.path.abspath(options.createdb_path))
+        elif options.updatedb_path:
+            print "Press Ctrl-C to safely exit at anytime."
+            print
 
-        if options.date:
+            updatedb(os.path.abspath(options.updatedb_path))
+        elif options.date:
             def results_for(year, month, day=None):
                 if day is not None:
                     return PlayWhe().results_for_day(year, month, day)
@@ -305,15 +410,18 @@ if __name__ == "__main__":
                 parser.error('Must be a valid date in the format "yyyy-mm" or "yyyy-mm-dd"')
             except PlayWheException:
                 print network_connection_error
-                exit(1)
+                sys.exit(1)
         else:
             try:
                 display_results(PlayWhe().results())
             except PlayWheException:
                 print network_connection_error
-                exit(1)
+                sys.exit(1)
+    except PlayWheException, e:
+        print e
+        sys.exit(1)
     except KeyboardInterrupt:
         print
     except Exception:
         print "Sorry, an unknown error has occurred. Program terminated abnormally."
-        exit(1)
+        sys.exit(1)
