@@ -13,7 +13,7 @@ Why was this written?
 
 Which version do I have?
 
-    Version 0.2.
+    Version 0.3.
 
     After installing the package you can also check the version number by issuing
     the following command at a shell prompt.
@@ -22,8 +22,8 @@ Which version do I have?
 
 How do I install it?
 
-    $ tar xvzf playwhe-0.2.tar.gz
-    $ cd playwhe-0.2
+    $ tar xvzf playwhe-0.3.tar.gz
+    $ cd playwhe-0.3
     $ sudo python setup.py install
 
 What are some of the things it can do?
