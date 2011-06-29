@@ -11,7 +11,7 @@ readme.close()
 
 setup(name="playwhe",
       version=playwhe.__version__,
-      description="A Python API and script for retrieving Play Whe results.",
+      description="A Python API and script for retrieving and storing Play Whe results.",
       long_description=long_description,
       url="http://pypi.python.org/pypi/playwhe",
       license="License :: Public Domain",
