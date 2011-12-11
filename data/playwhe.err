@@ -1,4 +1,0 @@
-[2011-06-28 08:36PM] Fetching results for 2007-09... IntegrityError: day(7) draw(8103) time_of_day("AM") number(0)
-[2011-06-28 08:39PM] Fetching results for 2008-08... IntegrityError: day(8) draw(1) time_of_day("PM") number(8670)
-[2011-06-28 08:41PM] Fetching results for 2009-01... IntegrityError: day(24) draw(3) time_of_day("AM") number(8953)
-[2011-06-28 08:41PM] Fetching results for 2009-02... IntegrityError: day(20) draw(6) time_of_day("PM") number(9000)

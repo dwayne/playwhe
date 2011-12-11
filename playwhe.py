@@ -25,6 +25,9 @@ __email__   = "me@dwaynecrooks.com"
 # Play Whe's birthday
 start_date = datetime.date(1994, 7, 4) # July 4th, 1994
 
+# The date that Play Whe changed to having 3 draws per day
+three_draws_date = datetime.date(2011, 11, 21) # November 21st, 2011
+
 # the abbreviated months of the year
 month_abbr = ["",
     "Jan", "Feb", "Mar", "Apr", "May", "Jun",
@@ -101,13 +104,13 @@ class Mark(object):
 class Result(object):
     """A Play Whe result."""
 
-    def __init__(self, draw, date, time_of_day, number):
+    def __init__(self, draw, date, period, number):
         """Create a result.
 
         draw        - a positive integer that uniquely identifies the result
         date        - a datetime.date object
-        time_of_day - "AM" or "PM", indicating whether the draw was the
-                      early (1:00 PM) draw or the late (6:30 PM) draw
+        period      - 1, 2 or 3, indicating whether the draw was the
+                      1st (10:30 AM), 2nd (1:00 PM) or 3rd (6:30 PM) draw
         number      - a number between Mark.lowest and Mark.highest inclusive
         """
         if draw < 1:
@@ -116,44 +119,44 @@ class Result(object):
         if not isinstance(date, datetime.date):
             raise TypeError("date is not a datetime.date object")
 
-        if time_of_day not in ["AM", "PM"]:
-            raise ValueError("time of day is invalid")
+        if period not in [1, 2, 3]:
+            raise ValueError("period is invalid")
 
         if number < Mark.lowest or number > Mark.highest:
             raise ValueError("number is out of range")
 
         self.draw = draw
         self.date = date
-        self.time_of_day = time_of_day
+        self.period = period
         self.number = number
 
     def __repr__(self):
-        return '%s(%d, %s, "%s", %d)' % \
+        return '%s(%d, %s, %d, %d)' % \
             (self.__class__,
              self.draw,
              repr(self.date),
-             self.time_of_day,
+             self.period,
              self.number)
 
     def __str__(self):
         """Return a string representing the result in CSV format.
 
-        For example, str(Result(1, playwhe.start_date, "AM", 15)) == "1,1994-07-04,AM,15".
+        For example, str(Result(1, playwhe.start_date, 1, 15)) == "1,1994-07-04,1,15".
         """
-        return "%d,%s,%s,%d" % \
+        return "%d,%s,%d,%d" % \
             (self.draw,
              self.date.isoformat(),
-             self.time_of_day,
+             self.period,
              self.number)
 
     def prettyprint(self):
         """Return a nicely formatted string representing the result."""
-        return "Date:   %s-%s-%d\nTime:   %s\nDraw:   %d\nNumber: %d (%s)" % \
+        return "Date:   %s-%s-%d\nDraw:   %d\nPeriod: %d\nNumber: %d (%s)" % \
                 (str(self.date.day).zfill(2),
                  month_abbr[self.date.month],
                  self.date.year,
-                 self.time_of_day,
                  self.draw,
+                 self.period,
                  self.number,
                  Mark.get_name_of_number(self.number))
 
@@ -217,7 +220,7 @@ class PlayWhe(object):
         return filter(lambda r: r.date == date, results)
 
     def results(self):
-        """Return a list with the two most recent results.
+        """Return a list with the three most recent results.
 
         The results are ordered in increasing order of the draw number.
         """
@@ -229,7 +232,7 @@ class PlayWhe(object):
         except PlayWheException:
             raise PlayWheException("Unable to retrieve the results for the previous two drawings")
 
-        while len(results) < 2:
+        while len(results) < 3:
             date = date - datetime.timedelta(1)
             date = datetime.date(date.year, date.month, 1)
             try:
@@ -237,12 +240,12 @@ class PlayWhe(object):
             except PlayWheException:
                 raise PlayWheException("Unable to retrieve the results for the previous two drawings")
 
-        return results[-2:]
+        return results[-3:]
 
     def _parse_results(self, year, month, html):
         # html is a string of HTML containing Play Whe results of the form:
         #     <date>: Draw # <number> : <period>'s draw was <mark>
-        pattern = r"(\d{2})-%s-%s: Draw # (\d+) : (AM|PM)'s draw  was (\d+)" % \
+        pattern = r"(\d{2})-%s-%s: Draw # (\d+) : (Morning|Midday|Evening)'s draw  was (\d+)" % \
             (month_abbr[month], str(year % 100).zfill(2))
 
         results = []
@@ -250,11 +253,11 @@ class PlayWhe(object):
             try:
                 result = Result(int(r[1]),
                                 datetime.date(year, month, int(r[0])),
-                                r[2],
+                                {'Morning': 1, 'Midday': 2, 'Evening': 3}[r[2]],
                                 int(r[3]))
                 results.append(result)
             except (ValueError, TypeError), e:
-                print >> sys.stderr, 'IntegrityError: day(%d) draw(%d) time_of_day("%s") number(%d)' % (int(r[0]), int(r[1]), r[2], int(r[3]))
+                print >> sys.stderr, 'IntegrityError: day(%d) draw(%d) period("%s") number(%d)' % (int(r[0]), int(r[1]), r[2], int(r[3]))
 
         return sorted(results, key=attrgetter("draw"))
 
@@ -284,7 +287,7 @@ def createdb(db_path):
     CREATE TABLE IF NOT EXISTS results(
         draw INTEGER PRIMARY KEY,
         date TEXT,
-        time_of_day TEXT,
+        period INTEGER NOT NULL,
         number INTEGER NOT NULL REFERENCES marks(number)
     )""")
 
@@ -323,10 +326,12 @@ def updatedb(db_path):
     last = (start_date, "AM")
     if last_result:
         date = datetime.date(*map(int, last_result["date"].split('-')))
-        if last_result["time_of_day"] == "AM":
-            last = (date, "PM")
+        if last_result["period"] == 1:
+            last = (date, 2)
+        elif last_result["period"] == 2:
+            last = (date, 3)
         else:
-            last = (date + datetime.timedelta(days=1), "AM")
+            last = (date + datetime.timedelta(days=1), 1)
     last_date, last_time_of_day = last
     current_date = datetime.date.today()
 
@@ -345,7 +350,7 @@ def updatedb(db_path):
                 except PlayWheException:
                     raise PlayWheException(network_connection_error)
                 for r in results:
-                    conn.execute("INSERT OR IGNORE INTO results (draw, date, time_of_day, number) VALUES(?,?,?,?)", (r.draw, r.date.isoformat(), r.time_of_day, r.number))
+                    conn.execute("INSERT OR IGNORE INTO results (draw, date, period, number) VALUES(?,?,?,?)", (r.draw, r.date.isoformat(), r.period, r.number))
                     conn.commit()
 
                 print >> sys.stderr, "DONE!"
