@@ -49,7 +49,7 @@ What are some of the things it can do?
     > # retrieve and display the results for April 2nd, 2011
     > print "\n\n".join(map(lambda r: r.prettyprint(), p.results_for_day(2011, 4, 2)))
 
-    > # retrieve and display the two most recent results
+    > # retrieve and display the three most recent results
     > print "\n\n".join(map(lambda r: r.prettyprint(), p.results()))
 
     You can get Play Whe results directly from NLCB using the playwhe.py script.
@@ -62,7 +62,7 @@ What are some of the things it can do?
     $ playwhe.py --pretty-print --date=2011-04-02
     $ playwhe.py -p -d 2011-04-02
 
-    $ echo Retrieve and display the two most recent results
+    $ echo Retrieve and display the three most recent results
     $ playwhe.py --pretty-print
     $ playwhe.py -p
 
