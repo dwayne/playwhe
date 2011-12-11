@@ -36,7 +36,7 @@ Slightly longer answer:
 
 **Which version do I have?**
 
-Version 0.3.
+Version 0.4.
 
 After installing the package you can also check the version number by issuing
 the following command at a shell prompt.
@@ -45,12 +45,22 @@ the following command at a shell prompt.
 
     $ playwhe.py --version
 
+**What has changed from version 0.3 to 0.4?**
+
+On November 21st, 2011 the NLCB started drawing Play Whe 3 times per day.
+Due to this change the display format of the results retrieved via their
+website was changed. Since this program simply scrapes the HTML off their
+results page, I needed to update the script to work with the new format.
+
+Hence, the logic for retrieving and storing the Play Whe results have
+changed. However, the interface to perform these operations have not.
+
 **How do I install it?**
 
 ::
 
-    $ tar xvzf playwhe-0.3.tar.gz
-    $ cd playwhe-0.3
+    $ tar xvzf playwhe-0.4.tar.gz
+    $ cd playwhe-0.4
     $ sudo python setup.py install
 
 **What are some of the things it can do?**
