@@ -1,0 +1,7 @@
+How do I distribute it?
+
+    $ python setup.py sdist
+
+How do I register it with PyPI?
+
+    $ python setup.py register
