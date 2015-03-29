@@ -255,7 +255,7 @@ class PlayWhe(object):
             (month_abbr[month], str(year % 100).zfill(2))
 
         results = []
-        for r in re.findall(pattern, html):
+        for r in re.findall(pattern, html, re.IGNORECASE):
             try:
                 result = Result(int(r[0]),
                                 datetime.date(year, month, int(r[1])),
