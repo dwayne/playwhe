@@ -1,7 +1,11 @@
-How do I distribute it?
+How do I update the database of results?
 
-    $ python setup.py sdist
+    $ python playwhe.py -u "<path to>/playwhe/data/playwhe.db"
 
 How do I register it with PyPI?
 
     $ python setup.py register
+
+How do I distribute it?
+
+    $ python setup.py sdist
