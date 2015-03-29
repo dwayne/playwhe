@@ -167,9 +167,8 @@ class PlayWhe(object):
 
     def __init__(self,
                  host="nlcb.co.tt",
-                 service="/search/pwq/countdateCash.php",
+                 service="/app/index.php/pwresults/playwhemonthsum",
                  timeout=15):
-
         self.host = host
         self.service = service
         self.timeout = timeout
@@ -244,20 +243,27 @@ class PlayWhe(object):
 
     def _parse_results(self, year, month, html):
         # html is a string of HTML containing Play Whe results of the form:
+        #     <h2>
+        #         <strong> Draw #: </strong>13721<br>
+        #         <strong> Date: </strong>04-Mar-15<br>
+        #         <strong> Mark Drawn: </strong>19<br>
+        #         <strong> Drawn at: </strong>EM<br>
+        #     </h2>
+        # html is a string of HTML containing Play Whe results of the form:
         #     <date>: Draw # <number> : <period>'s draw was <mark>
-        pattern = r"(\d{2})-%s-%s: Draw # (\d+) : (Morning|Midday|Evening)'s draw  was (\d+)" % \
+        pattern = r"Draw #: </strong>(\d+).*? Date: </strong>(\d{1,2})-%s-%s.*? Mark Drawn: </strong>(\d+).*? Drawn at: </strong>(EM|AM|PM)" % \
             (month_abbr[month], str(year % 100).zfill(2))
 
         results = []
         for r in re.findall(pattern, html):
             try:
-                result = Result(int(r[1]),
-                                datetime.date(year, month, int(r[0])),
-                                {'Morning': 1, 'Midday': 2, 'Evening': 3}[r[2]],
-                                int(r[3]))
+                result = Result(int(r[0]),
+                                datetime.date(year, month, int(r[1])),
+                                {'EM': 1, 'AM': 2, 'PM': 3}[r[3]],
+                                int(r[2]))
                 results.append(result)
             except (ValueError, TypeError), e:
-                print >> sys.stderr, 'IntegrityError: day(%d) draw(%d) period("%s") number(%d)' % (int(r[0]), int(r[1]), r[2], int(r[3]))
+                print >> sys.stderr, 'IntegrityError: day(%d) draw(%d) period("%s") number(%d)' % (int(r[1]), int(r[0]), r[3], int(r[2]))
 
         return sorted(results, key=attrgetter("draw"))
 
