@@ -18,7 +18,7 @@ from operator import attrgetter
 from urllib import urlencode
 from urllib2 import urlopen, URLError
 
-__version__ = "0.4"
+__version__ = "0.5"
 __author__  = "Dwayne R. Crooks"
 __email__   = "me@dwaynecrooks.com"
 

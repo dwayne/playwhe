@@ -1,38 +1,16 @@
-#! /usr/bin/env python
+**What is this?**
 
-"""Distutils setup file."""
-
-from distutils.core import setup
-import playwhe
-
-setup(name="playwhe",
-      version=playwhe.__version__,
-      description="A Python API and script for retrieving and storing Play Whe results.",
-      url="http://pypi.python.org/pypi/playwhe",
-      license="License :: Public Domain",
-      author=playwhe.__author__,
-      author_email=playwhe.__email__,
-      py_modules=["playwhe"],
-      scripts=["playwhe.py"],
-      classifiers=["Development Status :: 5 - Production/Stable",
-                   "License :: Public Domain",
-                   "Operating System :: POSIX :: Linux",
-                   "Operating System :: Unix",
-                   "Intended Audience :: Developers",
-                   "Programming Language :: Python",
-                   "Topic :: Software Development :: Libraries"],
-      long_description=
-r"""**What is this?**
-
-A Python API and script for the retrieval and storage of Play Whe results from the `National Lotteries Control Board <http://www.nlcb.co.tt/>`_ (NLCB) website.
+A Python API and script for the retrieval and storage of Play Whe results from the [National Lotteries Control Board](http://www.nlcb.co.tt/) (NLCB) website.
 
 **Why was this written?**
 
-Short answer:
-    Because it can be written.
+*Short answer:*
 
-Slightly longer answer:
-    Because I was looking for a small Python project to work on for practice.
+> Because it can be written.
+
+*Slightly longer answer:*
+
+> Because I was looking for a small Python project to work on for practice.
 
 **Which version do I have?**
 
@@ -41,20 +19,18 @@ Version 0.5.
 After installing the package you can also check the version number by issuing
 the following command at a shell prompt.
 
-::
-
     $ playwhe.py --version
 
 **What has changed from version 0.4 to 0.5?**
 
-Around February 21st, 2015 the NLCB took down their website to redesign
+Around February 21st, 2015 the [NLCB](http://www.nlcb.co.tt/) took down their website to redesign
 and rebuild it. They changed the service URL along with the format of
 the HTML results. This required an update to the parser to ensure that
 the results could still be retrieved in the future.
 
 **What has changed from version 0.3 to 0.4?**
 
-On November 21st, 2011 the NLCB started drawing Play Whe 3 times per day.
+On November 21st, 2011 the [NLCB](http://www.nlcb.co.tt/) started drawing Play Whe 3 times per day.
 Due to this change the display format of the results retrieved via their
 website was changed. Since this program simply scrapes the HTML off their
 results page, I needed to update the script to work with the new format.
@@ -64,17 +40,13 @@ changed. However, the interface to perform these operations have not.
 
 **How do I install it?**
 
-::
-
     $ tar xvzf playwhe-0.5.tar.gz
     $ cd playwhe-0.5
     $ sudo python setup.py install
 
 **What are some of the things it can do?**
 
-You can get Play Whe results directly from NLCB using the playwhe module.
-
-::
+You can get Play Whe results directly from [NLCB](http://www.nlcb.co.tt/) using the playwhe module.
 
     import playwhe
     p = playwhe.PlayWhe()
@@ -88,9 +60,7 @@ You can get Play Whe results directly from NLCB using the playwhe module.
     # retrieve and display the three most recent results
     print "\n\n".join(map(lambda r: r.prettyprint(), p.results()))
 
-You can get Play Whe results directly from NLCB using the playwhe.py script.
-
-::
+You can get Play Whe results directly from [NLCB](http://www.nlcb.co.tt/) using the playwhe.py script.
 
     $ echo Retrieve and display the results for the month of April in the year 2011
     $ playwhe.py --pretty-print --date=2011-04
@@ -105,8 +75,6 @@ You can get Play Whe results directly from NLCB using the playwhe.py script.
     $ playwhe.py -p
 
 You can keep a local copy of previous Play Whe results in an SQLite database.
-
-::
 
     $ echo Create and initialize a Play Whe database
     $ playwhe.py --createdb="/home/<username>/playwhe.db"
@@ -123,8 +91,6 @@ You can keep a local copy of previous Play Whe results in an SQLite database.
 
 This project is hosted on GitHub at https://github.com/dwayne/playwhe.
 
-::
-
     $ git clone git://github.com/dwayne/playwhe.git
 
 **What liscense does this project use?**
@@ -133,12 +99,10 @@ This project is in the public domain. Do with it whatever you want.
 
 **Where can I get help?**
 
-::
-
     > import playwhe
     > help(playwhe)
 
     $ playwhe.py --help
 
 You can also get help, report bugs, make suggestions or ask thoughtful
-questions by contacting Dwayne R. Crooks via email at <me at dwaynecrooks dot com>.""")
+questions by contacting [Dwayne R. Crooks](mailto:me@dwaynecrooks.com).
