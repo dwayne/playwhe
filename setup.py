@@ -36,7 +36,7 @@ Slightly longer answer:
 
 **Which version do I have?**
 
-Version 0.5.
+Version 0.6.
 
 After installing the package you can also check the version number by issuing
 the following command at a shell prompt.
@@ -44,6 +44,14 @@ the following command at a shell prompt.
 ::
 
     $ playwhe.py --version
+
+**What has changed from version 0.5 to 0.6?**
+
+On July 6th, 2015 the [NLCB](http://www.nlcb.co.tt/) started drawing Play Whe
+4 times per day. The script was changed to correctly scrape the 4:00 PM draw.
+
+Also, previously the "period" stored with the results was changed from a
+numeric format "(1, 2, 3)" to a string format "('EM', 'AM', 'AN', 'PM')".
 
 **What has changed from version 0.4 to 0.5?**
 
@@ -66,8 +74,8 @@ changed. However, the interface to perform these operations have not.
 
 ::
 
-    $ tar xvzf playwhe-0.5.tar.gz
-    $ cd playwhe-0.5
+    $ tar xvzf playwhe-0.6.tar.gz
+    $ cd playwhe-0.6
     $ sudo python setup.py install
 
 **What are some of the things it can do?**

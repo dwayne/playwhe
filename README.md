@@ -14,39 +14,49 @@ A Python API and script for the retrieval and storage of Play Whe results from t
 
 **Which version do I have?**
 
-Version 0.5.
+Version 0.6.
 
 After installing the package you can also check the version number by issuing
 the following command at a shell prompt.
 
     $ playwhe.py --version
 
+**What has changed from version 0.5 to 0.6?**
+
+On July 6th, 2015 the [NLCB](http://www.nlcb.co.tt/) started drawing Play Whe
+4 times per day. The script was changed to correctly scrape the 4:00 PM draw.
+
+Also, previously the `period` stored with the results was changed from a
+numeric format `(1, 2, 3)` to a string format `('EM', 'AM', 'AN', 'PM')`.
+
 **What has changed from version 0.4 to 0.5?**
 
-Around February 21st, 2015 the [NLCB](http://www.nlcb.co.tt/) took down their website to redesign
-and rebuild it. They changed the service URL along with the format of
-the HTML results. This required an update to the parser to ensure that
+Around February 21st, 2015 the [NLCB](http://www.nlcb.co.tt/) took down their
+website to redesign and rebuild it. They changed the service URL along with the
+format of the HTML results. This required an update to the parser to ensure that
 the results could still be retrieved in the future.
 
 **What has changed from version 0.3 to 0.4?**
 
-On November 21st, 2011 the [NLCB](http://www.nlcb.co.tt/) started drawing Play Whe 3 times per day.
-Due to this change the display format of the results retrieved via their
-website was changed. Since this program simply scrapes the HTML off their
-results page, I needed to update the script to work with the new format.
+On November 21st, 2011 the [NLCB](http://www.nlcb.co.tt/) started drawing
+Play Whe 3 times per day. Due to this change the display format of the results
+retrieved via their website was changed. Since this program simply scrapes the
+HTML off their results page, I needed to update the script to work with the new
+format.
 
-Hence, the logic for retrieving and storing the Play Whe results have
-changed. However, the interface to perform these operations have not.
+Hence, the logic for retrieving and storing the Play Whe results have changed.
+However, the interface to perform these operations have not.
 
 **How do I install it?**
 
-    $ tar xvzf playwhe-0.5.tar.gz
-    $ cd playwhe-0.5
+    $ tar xvzf playwhe-0.6.tar.gz
+    $ cd playwhe-0.6
     $ sudo python setup.py install
 
 **What are some of the things it can do?**
 
-You can get Play Whe results directly from [NLCB](http://www.nlcb.co.tt/) using the playwhe module.
+You can get Play Whe results directly from [NLCB](http://www.nlcb.co.tt/) using
+the playwhe module.
 
     import playwhe
     p = playwhe.PlayWhe()
@@ -60,7 +70,8 @@ You can get Play Whe results directly from [NLCB](http://www.nlcb.co.tt/) using 
     # retrieve and display the three most recent results
     print "\n\n".join(map(lambda r: r.prettyprint(), p.results()))
 
-You can get Play Whe results directly from [NLCB](http://www.nlcb.co.tt/) using the playwhe.py script.
+You can get Play Whe results directly from [NLCB](http://www.nlcb.co.tt/) using
+the playwhe.py script.
 
     $ echo Retrieve and display the results for the month of April in the year 2011
     $ playwhe.py --pretty-print --date=2011-04

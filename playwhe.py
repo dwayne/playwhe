@@ -18,7 +18,7 @@ from operator import attrgetter
 from urllib import urlencode
 from urllib2 import urlopen, URLError
 
-__version__ = "0.5"
+__version__ = "0.6"
 __author__  = "Dwayne R. Crooks"
 __email__   = "me@dwaynecrooks.com"
 
@@ -27,6 +27,9 @@ start_date = datetime.date(1994, 7, 4) # July 4th, 1994
 
 # The date that Play Whe changed to having 3 draws per day
 three_draws_date = datetime.date(2011, 11, 21) # November 21st, 2011
+
+# The date that Play Whe changed to having 4 draws per day
+four_draws_date = datetime.date(2015, 7, 6) # July 6th, 2015
 
 # the abbreviated months of the year
 month_abbr = ["",
@@ -109,8 +112,8 @@ class Result(object):
 
         draw        - a positive integer that uniquely identifies the result
         date        - a datetime.date object
-        period      - 1, 2 or 3, indicating whether the draw was the
-                      1st (10:30 AM), 2nd (1:00 PM) or 3rd (6:30 PM) draw
+        period      - 'EM', 'AM', 'AN' or 'PM', indicating whether the draw was
+                      at 10:30 AM, 1:00 PM, 4:00 PM or 6:30 PM
         number      - a number between Mark.lowest and Mark.highest inclusive
         """
         if draw < 1:
@@ -119,7 +122,7 @@ class Result(object):
         if not isinstance(date, datetime.date):
             raise TypeError("date is not a datetime.date object")
 
-        if period not in [1, 2, 3]:
+        if period not in ["EM", "AM", "AN", "PM"]:
             raise ValueError("period is invalid")
 
         if number < Mark.lowest or number > Mark.highest:
@@ -131,7 +134,7 @@ class Result(object):
         self.number = number
 
     def __repr__(self):
-        return '%s(%d, %s, %d, %d)' % \
+        return '%s(%d, %s, %s, %d)' % \
             (self.__class__,
              self.draw,
              repr(self.date),
@@ -141,9 +144,9 @@ class Result(object):
     def __str__(self):
         """Return a string representing the result in CSV format.
 
-        For example, str(Result(1, playwhe.start_date, 1, 15)) == "1,1994-07-04,1,15".
+        For example, str(Result(1, playwhe.start_date, 'AM', 15)) == "1,1994-07-04,AM,15".
         """
-        return "%d,%s,%d,%d" % \
+        return "%d,%s,%s,%d" % \
             (self.draw,
              self.date.isoformat(),
              self.period,
@@ -151,7 +154,7 @@ class Result(object):
 
     def prettyprint(self):
         """Return a nicely formatted string representing the result."""
-        return "Date:   %s-%s-%d\nDraw:   %d\nPeriod: %d\nNumber: %d (%s)" % \
+        return "Date:   %s-%s-%d\nDraw:   %d\nPeriod: %s\nNumber: %d (%s)" % \
                 (str(self.date.day).zfill(2),
                  month_abbr[self.date.month],
                  self.date.year,
@@ -249,9 +252,7 @@ class PlayWhe(object):
         #         <strong> Mark Drawn: </strong>19<br>
         #         <strong> Drawn at: </strong>EM<br>
         #     </h2>
-        # html is a string of HTML containing Play Whe results of the form:
-        #     <date>: Draw # <number> : <period>'s draw was <mark>
-        pattern = r"Draw #: </strong>(\d+).*? Date: </strong>(\d{1,2})-%s-%s.*? Mark Drawn: </strong>(\d+).*? Drawn at: </strong>(EM|AM|PM)" % \
+        pattern = r"Draw #: </strong>(\d+).*? Date: </strong>(\d{1,2})-%s-%s.*? Mark Drawn: </strong>(\d+).*? Drawn at: </strong>(EM|AM|AN|PM)" % \
             (month_abbr[month], str(year % 100).zfill(2))
 
         results = []
@@ -259,7 +260,7 @@ class PlayWhe(object):
             try:
                 result = Result(int(r[0]),
                                 datetime.date(year, month, int(r[1])),
-                                {'EM': 1, 'AM': 2, 'PM': 3}[r[3]],
+                                r[3].upper(),
                                 int(r[2]))
                 results.append(result)
             except (ValueError, TypeError), e:
@@ -293,7 +294,7 @@ def createdb(db_path):
     CREATE TABLE IF NOT EXISTS results(
         draw INTEGER PRIMARY KEY,
         date TEXT,
-        period INTEGER NOT NULL,
+        period TEXT NOT NULL,
         number INTEGER NOT NULL REFERENCES marks(number)
     )""")
 
@@ -332,12 +333,14 @@ def updatedb(db_path):
     last = (start_date, "AM")
     if last_result:
         date = datetime.date(*map(int, last_result["date"].split('-')))
-        if last_result["period"] == 1:
-            last = (date, 2)
-        elif last_result["period"] == 2:
-            last = (date, 3)
+        if last_result["period"] == "EM":
+            last = (date, "AM")
+        elif last_result["period"] == "AM":
+            last = (date, "AN")
+        elif last_result["period"] == "AN":
+            last = (date, "PM")
         else:
-            last = (date + datetime.timedelta(days=1), 1)
+            last = (date + datetime.timedelta(days=1), "EM")
     last_date, last_time_of_day = last
     current_date = datetime.date.today()
 
@@ -433,6 +436,6 @@ if __name__ == "__main__":
         sys.exit(1)
     except KeyboardInterrupt:
         print
-    except Exception:
+    except Exception, e:
         print "Sorry, an unknown error has occurred. Program terminated abnormally."
         sys.exit(1)
