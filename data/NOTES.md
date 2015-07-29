@@ -8,7 +8,11 @@ How do I register it with PyPI?
 
 How do I distribute it?
 
-    $ python setup.py sdist
+    $ python setup.py sdist upload
+
+Useful docs:
+
+- https://docs.python.org/2/distutils/packageindex.html
 
 Things to do when recreating the database of results from scratch:
 
