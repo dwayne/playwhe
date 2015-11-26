@@ -16,9 +16,10 @@ Useful docs:
 
 Things to do when recreating the database of results from scratch:
 
-1. Fix the [invalid draw number issue](https://bitbucket.org/dwaynecrooks/playwhe-restapi/issues/2/invalid-draw-number-in-data).
+1. Fix the [invalid draw number issues](https://github.com/dwayne/playwhe/issues?utf8=%E2%9C%93&q=+is%3Aissue+label%3Afix-data-manually+)
 
   ```
   $ sqlite3 playwhe.db
   > UPDATE results SET draw = 12168 WHERE draw = 16168;
+  > UPDATE results SET draw = 14456 WHERE draw = 14556;
   ```
