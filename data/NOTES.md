@@ -22,4 +22,5 @@ Things to do when recreating the database of results from scratch:
   $ sqlite3 playwhe.db
   > UPDATE results SET draw = 12168 WHERE draw = 16168;
   > UPDATE results SET draw = 14456 WHERE draw = 14556;
+  > UPDATE results SET draw = 14904 WHERE draw = 19404;
   ```
