@@ -36,7 +36,7 @@ Slightly longer answer:
 
 **Which version do I have?**
 
-Version 0.6.
+Version 0.7.
 
 After installing the package you can also check the version number by issuing
 the following command at a shell prompt.
@@ -45,9 +45,17 @@ the following command at a shell prompt.
 
     $ playwhe.py --version
 
+**What has changed from version 0.6 to 0.7?**
+
+The `NLCB <http://www.nlcb.co.tt/>`_ website occasionally has incorrect results.
+More often than not the draw numbers are the culprit. However, if we order
+the data by date, then by period and then by draw number we can mitigate any
+ill effects this bad data causes. This version attempts to fix the problem by
+doing just that.
+
 **What has changed from version 0.5 to 0.6?**
 
-On July 6th, 2015 the [NLCB](http://www.nlcb.co.tt/) started drawing Play Whe
+On July 6th, 2015 the `NLCB <http://www.nlcb.co.tt/>`_ started drawing Play Whe
 4 times per day. The script was changed to correctly scrape the 4:00 PM draw.
 
 Also, previously the "period" stored with the results was changed from a
