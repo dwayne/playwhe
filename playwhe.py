@@ -133,6 +133,11 @@ class Result(object):
         self.period = period
         self.number = number
 
+    @property
+    def numeric_period(self):
+        """Return a numeric representation of the period that's useful for sorting."""
+        return ["EM", "AM", "AN", "PM"].index(self.period)
+
     def __repr__(self):
         return '%s(%d, %s, %s, %d)' % \
             (self.__class__,
@@ -266,7 +271,7 @@ class PlayWhe(object):
             except (ValueError, TypeError), e:
                 print >> sys.stderr, 'IntegrityError: day(%d) draw(%d) period("%s") number(%d)' % (int(r[1]), int(r[0]), r[3], int(r[2]))
 
-        return sorted(results, key=attrgetter("draw"))
+        return sorted(results, key=attrgetter('date', 'numeric_period', 'draw'))
 
 import sqlite3
 
@@ -324,7 +329,19 @@ def updatedb(db_path):
     c = conn.cursor()
 
     try:
-        c.execute("SELECT * FROM RESULTS ORDER BY DRAW DESC LIMIT 1")
+        c.execute("""
+        SELECT * FROM RESULTS
+        ORDER BY
+            DATE DESC,
+            CASE PERIOD
+                WHEN 'EM' THEN 3
+                WHEN 'AM' THEN 2
+                WHEN 'AN' THEN 1
+                WHEN 'PM' THEN 0
+            END,
+            DRAW DESC
+        LIMIT 1
+        """)
     except sqlite3.Error:
         raise PlayWheException("Sorry, problems encountered accessing the database at %s." % db_path)
 
