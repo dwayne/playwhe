@@ -14,7 +14,7 @@ A Python API and script for the retrieval and storage of Play Whe results from t
 
 **Which version do I have?**
 
-Version 0.7.
+Version 0.7.1.
 
 After installing the package you can also check the version number by issuing
 the following command at a shell prompt.
@@ -57,8 +57,8 @@ However, the interface to perform these operations have not.
 
 **How do I install it?**
 
-    $ tar xvzf playwhe-0.6.tar.gz
-    $ cd playwhe-0.6
+    $ tar xvzf playwhe-0.7.1.tar.gz
+    $ cd playwhe-0.7.1
     $ sudo python setup.py install
 
 **What are some of the things it can do?**
