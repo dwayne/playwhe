@@ -17,7 +17,7 @@ def parse(html, year, month, yy, mmm):
     return [_norm(m, year, month) for m in matches]
 
 
-RawResult = namedtuple('RawResult', ['draw', 'year', 'month', 'day', 'number', 'period'])
+RawResult = namedtuple('RawResult', ['draw', 'year', 'month', 'day', 'period', 'number'])
 
 
 def _norm(match, year, month):
@@ -26,4 +26,4 @@ def _norm(match, year, month):
     number = int(match[2])
     period = match[3].upper()
 
-    return RawResult(draw, year, month, day, number, period)
+    return RawResult(draw, year, month, day, period, number)

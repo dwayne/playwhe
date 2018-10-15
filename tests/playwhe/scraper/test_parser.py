@@ -13,24 +13,24 @@ class ParseTestCase(unittest.TestCase):
               'yy': '94',
               'mmm': 'Jul',
               'len': 48,
-              'first': RawResult(1, 1994, 7, 4, 15, 'AM'),
-              'last': RawResult(48, 1994, 7, 30, 28, 'PM')
+              'first': RawResult(1, 1994, 7, 4, 'AM', 15),
+              'last': RawResult(48, 1994, 7, 30, 'PM', 28)
             },
             { 'year': 2015,
               'month': 7,
               'yy': '15',
               'mmm': 'Jul',
               'len': 100,
-              'first': RawResult(14018, 2015, 7, 1, 24, 'EM'),
-              'last': RawResult(14117, 2015, 7, 31, 25, 'PM')
+              'first': RawResult(14018, 2015, 7, 1, 'EM', 24),
+              'last': RawResult(14117, 2015, 7, 31, 'PM', 25)
             },
             { 'year': 2011,
               'month': 11,
               'yy': '11',
               'mmm': 'Nov',
               'len': 59,
-              'first': RawResult(10652, 2011, 11, 1, 14, 'PM'),
-              'last': RawResult(10711, 2011, 11, 30, 14, 'PM')
+              'first': RawResult(10652, 2011, 11, 1, 'PM', 14),
+              'last': RawResult(10711, 2011, 11, 30, 'PM', 14)
             }
         ]
 
