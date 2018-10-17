@@ -1,6 +1,12 @@
 import datetime
 
 
+PROGRAM_NAME = 'playwhe'
+
+
+VERSION = '0.8.0-alpha.1'
+
+
 # Play Whe's birthday
 START_DATE = datetime.date(1994, 7, 4) # July 4th, 1994
 
