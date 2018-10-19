@@ -12,8 +12,7 @@ logger = logging.getLogger(__name__)
 def main(args=None):
     ns = argument_parser().parse_args(args)
 
-    if ns.verbose:
-        configure_logging()
+    configure_logging(logging.INFO if ns.verbose else logging.ERROR)
 
     try:
         run(ns)
@@ -68,9 +67,9 @@ def argument_parser():
     return parser
 
 
-def configure_logging():
+def configure_logging(level):
     logger = logging.getLogger('playwhe')
-    logger.setLevel(logging.INFO)
+    logger.setLevel(level)
 
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
