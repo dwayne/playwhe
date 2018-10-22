@@ -1,6 +1,16 @@
-from sqlalchemy import case, select
+from sqlalchemy import bindparam, case, select
 
-from .schema import results
+from .schema import marks, results
+
+
+def select_marks():
+    return select([marks])
+
+
+def select_mark():
+    return select([marks]).\
+        where(marks.c.number == bindparam('number')).\
+        limit(1)
 
 
 PERIODS_DESC = {

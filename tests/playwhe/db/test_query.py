@@ -3,9 +3,42 @@ import unittest
 
 from sqlalchemy import create_engine
 
+from playwhe import constants
 from playwhe.db.tasks import initialize
-from playwhe.db.query import select_last_result
+from playwhe.db.query import select_last_result, select_mark, select_marks
 from playwhe.db.schema import results
+
+
+class SelectMarksTestCase(unittest.TestCase):
+    def setUp(self):
+        self.engine = create_engine('sqlite:///:memory:')
+        initialize(self.engine)
+
+    def test_it_returns_all_marks(self):
+        with self.engine.begin() as conn:
+            marks = conn.execute(select_marks()).fetchall()
+
+            self.assertEqual(len(marks), 36)
+            for number, name in constants.SPIRITS.items():
+                self.assertEqual(marks[number-1], (number, name))
+
+
+class SelectMarkTestCase(unittest.TestCase):
+    def setUp(self):
+        self.engine = create_engine('sqlite:///:memory:')
+        initialize(self.engine)
+
+    def test_when_the_number_exists(self):
+        with self.engine.begin() as conn:
+            mark = conn.execute(select_mark(), number=8).fetchone()
+
+            self.assertEqual(mark, (8, 'tiger'))
+
+    def test_when_the_number_does_not_exist(self):
+        with self.engine.begin() as conn:
+            mark = conn.execute(select_mark(), number=37).fetchone()
+
+            self.assertIsNone(mark)
 
 
 class SelectLastResultTestCase(unittest.TestCase):
