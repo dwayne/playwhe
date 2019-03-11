@@ -1,14 +1,14 @@
 playwhe
 =======
 
-A Python library and CLI for the retrieval and storage of Play Whe results from
-the `National Lotteries Control Board <http://www.nlcb.co.tt/>`_ (NLCB).
+A Python library and CLI for fetching and storing Play Whe results from the
+`National Lotteries Control Board <http://www.nlcb.co.tt/>`_ (NLCB).
 
 I originally wrote :code:`playwhe` in 2011 when I wanted to work on a small
 project to build a RESTful API for Play Whe. The project has grown since then
 and this code continues to play a key role in it.
 
-:code:`playwhe` helps many people access Play Whe results in a convenient way.
+:code:`playwhe` helps many people to conveniently access Play Whe results.
 
 Installation
 ------------
@@ -24,17 +24,17 @@ To install, simply use pip (or `pipenv`_):
 Usage
 -----
 
-The library currently supports the implementation of the CLI. In the future,
-a developer would also be able to use the library within another application to
-query a database of Play Whe results in useful and interesting ways.
+The library supports the implementation of the CLI. In the future, a developer
+would also be able to use the library within another application to query a
+database of Play Whe results in useful and interesting ways.
 
 **So what can the CLI do?**
 
 There are 3 main things you can do with :code:`playwhe` on the command-line:
 
 1. Initialize a database for storing Play Whe results.
-2. Load Play Whe results from a CSV file into the database.
-3. Sync or update the database with the latest results from NLCB's servers.
+2. Load existing Play Whe results from a CSV file into the database.
+3. Update the database with the latest results from NLCB's servers.
 
 **Initialize**
 
@@ -43,13 +43,13 @@ following:
 
 .. code-block:: bash
 
-    $ playwhe --init sqlite:////home/dwayne/playwhe.db
+    $ playwhe --verbose --init sqlite:///$HOME/playwhe.db
 
 The command creates a new SQLite database in the :code:`playwhe.db` file in the
-:code:`/home/dwayne` directory. The database contains the tables needed for
-storing the Play Whe results.
+:code:`$HOME` directory. The database contains the tables needed for storing the
+Play Whe results.
 
-Once the database has been initialized you can begin to load or sync the Play
+Once the database has been initialized you can begin to load or update the Play
 Whe results as needed.
 
 **Load**
@@ -59,7 +59,7 @@ following:
 
 .. code-block:: bash
 
-    $ playwhe --load results.csv sqlite:////home/dwayne/playwhe.db
+    $ playwhe --verbose --load data/results.csv sqlite:///$HOME/playwhe.db
 
 :code:`results.csv` is a CSV file that contains the results you intend to load
 into the database.
@@ -68,35 +68,36 @@ Each line in the CSV file needs to be in the format:
 
 .. code-block::
 
-    <draw:1,2,3,...>,<date:yyyy-mm-dd>,<period:EM|AM|AN|PM>,<number:1-36>
+    <draw:1|2|3|...>,<date:yyyy-mm-dd>,<period:EM|AM|AN|PM>,<number:1-36>
 
-The load command is intended to be used, only once, when you're starting off with
-an empty database, i.e. when you've just initialized the database. In fact, you
-can initialize and load the database in one command by running the following:
+The load command is intended to be used, only once, when you're starting off
+with an empty database, i.e. when you've just initialized the database. In fact,
+you can initialize and load the database in one command by running the
+following:
 
 .. code-block:: bash
 
-    $ playwhe -il results.csv sqlite:////home/dwayne/playwhe.db
+    $ playwhe -Vil data/results.csv sqlite:///$HOME/playwhe.db
 
-:code:`-i` is shorthand for :code:`--init` and :code:`-l` is shorthand for
-:code:`--load`.
+:code:`-V` is shorthand for :code:`--verbose`, :code:`-i` is shorthand for
+:code:`--init` and :code:`-l` is shorthand for :code:`--load`.
 
-You can find a slightly out-of-date :code:`results.csv` file in the :code:`data`
-directory of this project. I update it occasionally so that you don't have to do
-too much syncing when you're starting from an empty database.
+You can find a necessarily out-of-date :code:`results.csv` file in the
+:code:`data` directory of this project. I update it occasionally so that you
+don't have to do too much updating when you're starting from an empty database.
 
 Another benefit of using :code:`data/results.csv` is that if there's any error
 in the results provided by NLCB then I usually fix it in the CSV file. So at
 least you know you're starting off with good data.
 
-**Sync**
+**Update**
 
 To update the database with the latest results from NLCB's servers you need to
 run the following:
 
 .. code-block:: bash
 
-    $ playwhe --verbose --sync sqlite:////home/dwayne/playwhe.db
+    $ playwhe --verbose --update sqlite:///$HOME/playwhe.db
 
 If you're starting from an empty database or a really out-of-date database then
 be prepared to wait a while since the program has to fetch the data from a
@@ -105,13 +106,13 @@ remote server.
 The :code:`--verbose` option is not necessary but it's helpful. Use it to keep
 track of the task when you're running it interactively.
 
-If you intend to sync using a cron job then I'd recommend removing the
+If you intend to update using a cron job then I'd recommend removing the
 :code:`verbose` flag and also redirecting standard error to a log file. Here's
 what the command would look like:
 
 .. code-block:: bash
 
-    $ playwhe --sync sqlite:////home/dwayne/playwhe.db 2>> /home/dwayne/playwhe.log
+    $ playwhe --update sqlite:///$HOME/playwhe.db 2>> $HOME/playwhe.log
 
 **What else can the CLI do?**
 
@@ -156,13 +157,19 @@ Run a specific test module.
 
 .. code-block:: bash
 
-    $ python -m unittest tests.playwhe.scraper.test_client
+    $ python -m unittest tests.playwhe.client.test_fetcher
 
 Run a specific test case.
 
 .. code-block:: bash
 
-    $ python -m unittest tests.playwhe.scraper.test_client.FetchFromMockServerTestCase.test_when_it_succeeds
+    $ python -m unittest tests.playwhe.client.test_fetcher.FetchFromMockServerTestCase.test_when_it_succeeds
+
+Run a test against the real server.
+
+.. code-block:: bash
+
+    $ PLAYWHE_TESTS_USE_REAL_SERVER=1 python -m unittest tests.playwhe.client.test_fetcher.FetchFromRealServerTestCase
 
 Resources
 ---------

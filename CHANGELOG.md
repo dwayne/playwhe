@@ -5,6 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.8.0-alpha.2 (2019-03-16)
+
+A refactoring of the library to have it expose a more useful public API.
+
+### Added
+
+- The `playwhe.client` module
+- The `playwhe.cli` module
+- A notes file, `NOTES.md`
+- An environment variable condition on tests that use the real server. The
+  environment variable is called `PLAYWHE_TESTS_USE_REAL_SERVER`
+
+### Removed
+
+- The `playwhe.scraper` module
+- The `playwhe.db` module
+- The `bin/results.sh` script
+
+### Changed
+
+- The public API
+
 ## 0.8.0-alpha.1 (2018-10-20)
 
 A complete rewrite.
